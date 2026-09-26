@@ -300,6 +300,15 @@ function validate_required(array $data, array $fields): array
     return $errors;
 }
 
+/** Display marks as whole numbers (5.00 → 5). */
+function format_marks(mixed $value): string
+{
+    if ($value === null || $value === '') {
+        return '0';
+    }
+    return (string)(int)round((float)$value);
+}
+
 /**
  * Normalize / validate Pakistani mobile numbers.
  * Accepts: +92 3XXXXXXXXX, +923XXXXXXXXX, 03XXXXXXXXX, 3XXXXXXXXX

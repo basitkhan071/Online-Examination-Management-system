@@ -62,7 +62,7 @@ require dirname(__DIR__) . '/includes/header.php';
                     <td><strong><?= e($r['title']) ?></strong><br><small><?= e(format_datetime($r['start_time'], 'M j, Y')) ?></small></td>
                     <td><?= e($r['mega_title'] ? $r['mega_title'].' ('.$r['mega_code'].')' : '—') ?></td>
                     <td><?= e($r['subject_code']) ?></td>
-                    <td><?= e($r['obtained_marks'].' / '.$r['total_marks']) ?></td>
+                    <td><?= e(format_marks($r['obtained_marks']).' / '.format_marks($r['total_marks'])) ?></td>
                     <td>
                         <div style="min-width:120px">
                             <strong><?= e((string)$r['percentage']) ?>%</strong>

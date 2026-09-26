@@ -65,7 +65,7 @@ require dirname(__DIR__) . '/includes/header.php';
         <div class="paper-card-stats">
             <div><span>Teacher</span><strong><?= e($ex['teacher_name']) ?></strong></div>
             <div><span>Duration</span><strong><?= (int)$ex['duration_minutes'] ?> mins</strong></div>
-            <div><span>Total Marks</span><strong><?= e((string)$ex['total_marks']) ?></strong></div>
+            <div><span>Total Marks</span><strong><?= e(format_marks($ex['total_marks'])) ?></strong></div>
             <div><span>Questions</span><strong><?= (int)$ex['qcount'] ?></strong></div>
         </div>
         <div class="chip-row" style="margin:10px 0">

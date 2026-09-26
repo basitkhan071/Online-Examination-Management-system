@@ -114,7 +114,7 @@ require dirname(__DIR__) . '/includes/header.php';
             <?php if (!$results): ?><div class="empty-state"><p>Published results will appear here.</p></div><?php endif; ?>
             <?php foreach ($results as $r): ?>
                 <div class="feed-item" style="justify-content:space-between">
-                    <div><strong><?= e($r['title']) ?></strong><span><?= e($r['obtained_marks'].'/'.$r['total_marks']) ?></span></div>
+                    <div><strong><?= e($r['title']) ?></strong><span><?= e(format_marks($r['obtained_marks']).'/'.format_marks($r['total_marks'])) ?></span></div>
                     <span class="badge badge-accent"><?= e($r['grade']) ?> · <?= e((string)$r['percentage']) ?>%</span>
                 </div>
             <?php endforeach; ?>

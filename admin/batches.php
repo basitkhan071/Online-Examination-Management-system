@@ -77,8 +77,7 @@ require dirname(__DIR__) . '/includes/header.php';
             <?php foreach ($rows as $r): ?>
                 <tr>
                     <td>
-                        <strong><?= e($r['name']) ?></strong>
-                        <div style="color:var(--muted);font-size:.85rem;margin-top:2px">Class of <?= (int)$r['year'] ?></div>
+                        <strong><?= e($r['name']) ?> - <?= (int)$r['year'] ?></strong>
                     </td>
                     <td><?= e($r['department_name'] ?: '—') ?></td>
                     <td><?= (int)$r['student_count'] ?></td>
@@ -105,7 +104,7 @@ require dirname(__DIR__) . '/includes/header.php';
             <div class="modal-body">
                 <div class="form-row">
                     <div class="form-group"><label>Batch name</label><input class="form-control" name="name" required value="<?= e($edit['name'] ?? '') ?>" placeholder="e.g. Batch 2024"></div>
-                    <div class="form-group"><label>Class of (year)</label><input class="form-control" type="number" name="year" min="2000" max="2100" required value="<?= e((string)($edit['year'] ?? date('Y'))) ?>"></div>
+                    <div class="form-group"><label>End year</label><input class="form-control" type="number" name="year" min="2000" max="2100" required value="<?= e((string)($edit['year'] ?? date('Y'))) ?>" placeholder="e.g. 2028"></div>
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label>Department</label>

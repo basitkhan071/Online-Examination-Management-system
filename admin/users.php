@@ -370,7 +370,12 @@ require dirname(__DIR__) . '/includes/header.php';
                     </div>
                     <div class="form-group">
                         <label>Password <span id="passwordHint"><?= $editUser ? '(leave blank to keep)' : '' ?></span></label>
-                        <input class="form-control" type="password" name="password" id="userPassword" <?= $editUser ? '' : 'required' ?>>
+                        <div class="password-field">
+                            <input class="form-control" type="password" name="password" id="userPassword" autocomplete="new-password" <?= $editUser ? '' : 'required' ?>>
+                            <button type="button" class="password-toggle" id="userPasswordToggle" aria-label="Show password" title="Show password">
+                                <?= oems_icon('eye') ?>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="form-row">
@@ -489,10 +494,22 @@ require dirname(__DIR__) . '/includes/header.php';
   const actionInput = document.getElementById('userFormAction');
   const password = document.getElementById('userPassword');
   const passwordHint = document.getElementById('passwordHint');
+  const passwordToggle = document.getElementById('userPasswordToggle');
   const studentId = document.getElementById('fieldStudentId');
   const employeeId = document.getElementById('fieldEmployeeId');
   const isEditPage = <?= $editUser ? 'true' : 'false' ?>;
   const listUrl = <?= json_encode($listUrl) ?>;
+  const eyeSvg = <?= json_encode(oems_icon('eye')) ?>;
+  const eyeOffSvg = <?= json_encode(oems_icon('eye-off')) ?>;
+
+  passwordToggle?.addEventListener('click', () => {
+    if (!password) return;
+    const show = password.type === 'password';
+    password.type = show ? 'text' : 'password';
+    passwordToggle.innerHTML = show ? eyeOffSvg : eyeSvg;
+    passwordToggle.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+    passwordToggle.setAttribute('title', show ? 'Hide password' : 'Show password');
+  });
 
   function currentRole(){
     if (!role) return '';

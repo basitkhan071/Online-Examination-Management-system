@@ -236,8 +236,8 @@ require dirname(__DIR__) . '/includes/header.php';
                     <td><?= e($r['roll']) ?></td>
                     <td><strong><?= e($r['full_name']) ?></strong></td>
                     <td><a href="<?= url('/teacher/grading.php?session_id='.(int)$examId.'&student_id='.(int)$r['student_id']) ?>"><?= e($examMeta['title'] ?? 'Paper') ?></a></td>
-                    <td><?= e((string)$r['obtained_marks']) ?></td>
-                    <td><?= e((string)$r['total_marks']) ?></td>
+                    <td><?= e(format_marks($r['obtained_marks'])) ?></td>
+                    <td><?= e(format_marks($r['total_marks'])) ?></td>
                     <td style="color:<?= $r['pass_fail']==='PASS' ? 'var(--success)' : 'var(--danger)' ?>;font-weight:600"><?= e((string)$r['percentage']) ?>%</td>
                     <td><span class="badge <?= $r['pass_fail']==='PASS'?'badge-success':'badge-danger' ?>"><?= e($r['pass_fail']) ?></span></td>
                     <td><span class="badge <?= $r['status']==='published'?'badge-success':'badge-warning' ?>"><?= e($r['status']) ?></span></td>

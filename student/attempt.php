@@ -168,7 +168,7 @@ if ($needsPassword && !$passwordOk) {
                 <div><span>Roll No</span><strong><?= e($student['student_id']) ?></strong></div>
                 <div><span>Batch</span><strong><?= e($exam['batch_name'] ?: '—') ?></strong></div>
                 <div><span>Duration</span><strong><?= (int)$exam['duration_minutes'] ?> minutes</strong></div>
-                <div><span>Total Marks</span><strong><?= e((string)$exam['total_marks']) ?></strong></div>
+                <div><span>Total Marks</span><strong><?= e(format_marks($exam['total_marks'])) ?></strong></div>
             </div>
             <form method="post" style="margin-top:18px">
                 <?= csrf_field() ?>
@@ -449,7 +449,7 @@ require dirname(__DIR__) . '/includes/header.php';
                 <span>Roll No: <?= e($student['student_id']) ?></span>
                 <span>Semester: <?= $exam['semester'] !== null ? (int)$exam['semester'] : '—' ?></span>
                 <span>Duration: <?= (int)$exam['duration_minutes'] ?> minutes</span>
-                <span>Total Marks: <?= e((string)$exam['total_marks']) ?></span>
+                <span>Total Marks: <?= e(format_marks($exam['total_marks'])) ?></span>
             </div>
             <span class="badge badge-warning">Current Section: <?= e($currentSection['section_code'] . ' (' . $currentSection['section_type'] . ')') ?></span>
         </div>
@@ -476,7 +476,7 @@ require dirname(__DIR__) . '/includes/header.php';
             <div class="chip-row" style="margin-bottom:8px">
                 <span class="badge">Question <?= $qIndex + 1 ?> of <?= count($questions) ?></span>
                 <span class="badge badge-brand"><?= e($q['question_type']) ?></span>
-                <span class="badge"><?= e((string)$q['exam_marks']) ?> marks</span>
+                <span class="badge"><?= e(format_marks($q['exam_marks'])) ?> marks</span>
             </div>
             <h3><?= e($q['question_text']) ?></h3>
             <?php if ($q['question_type'] === 'mcq'): ?>

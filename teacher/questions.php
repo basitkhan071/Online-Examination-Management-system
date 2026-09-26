@@ -314,7 +314,7 @@ $subjectsJson = array_map(static fn($s) => [
                     <td><?= e($q['subject_code']) ?></td>
                     <td><span class="badge"><?= e($q['question_type']) ?></span></td>
                     <td><span class="badge badge-<?= $q['difficulty'] === 'hard' ? 'danger' : ($q['difficulty'] === 'easy' ? 'success' : 'warning') ?>"><?= e($q['difficulty']) ?></span></td>
-                    <td><?= e((string)$q['marks']) ?></td>
+                    <td><?= e(format_marks($q['marks'])) ?></td>
                     <td class="actions">
                         <a class="btn btn-sm btn-secondary" href="?edit=<?= (int)$q['id'] ?>">Edit</a>
                         <form method="post" style="display:inline" data-confirm="Delete this question?">

@@ -442,7 +442,7 @@ if (!$editSections && $showModal) {
                                     <input type="checkbox" name="section_questions[<?= (int)$si ?>][]" value="<?= (int)$q['id'] ?>" <?= in_array((int)$q['id'], $sel, true)?'checked':'' ?>>
                                     <div>
                                         <strong><?= e(mb_strimwidth($q['question_text'], 0, 90, '…')) ?></strong>
-                                        <span><?= e($q['question_type']) ?> · <?= e((string)$q['marks']) ?> marks</span>
+                                        <span><?= e($q['question_type']) ?> · <?= e(format_marks($q['marks'])) ?> marks</span>
                                     </div>
                                 </label>
                             <?php endforeach; ?>

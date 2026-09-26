@@ -133,7 +133,7 @@ if ($sessionExamId && $sessionStudentId) {
                 <?php if ($exam['mega_title']): ?>
                     <span class="badge badge-danger"><?= e($exam['mega_title']) ?> (<?= e($exam['mega_code']) ?>)</span>
                 <?php endif; ?>
-                <span class="badge">Total: <?= e((string)$exam['total_marks']) ?> marks</span>
+                <span class="badge">Total: <?= e(format_marks($exam['total_marks'])) ?> marks</span>
             </div>
             <div class="paper-card-stats">
                 <div><span>Department / Batch</span><strong><?= e(($exam['department_name'] ?: '—') . ' / ' . ($exam['batch_name'] ?: '—')) ?></strong></div>
@@ -149,7 +149,7 @@ if ($sessionExamId && $sessionStudentId) {
     <div class="eval-summary">
         <div>
             <span>Obtained Marks</span>
-            <strong><?= e(number_format($obtained, 2)) ?> out of <?= e(number_format($total, 2)) ?></strong>
+            <strong><?= e(format_marks($obtained)) ?> out of <?= e(format_marks($total)) ?></strong>
         </div>
         <div>
             <span>Percentage</span>
@@ -163,11 +163,11 @@ if ($sessionExamId && $sessionStudentId) {
         </div>
         <div>
             <span>Passing</span>
-            <strong><?= e((string)$exam['passing_marks']) ?> marks</strong>
+            <strong><?= e(format_marks($exam['passing_marks'])) ?> marks</strong>
             <small style="opacity:.85"><?= e(get_setting('passing_percentage', '40')) ?>% fallback</small>
         </div>
         <div class="eval-progress">
-            <span>Progress: <?= e(number_format($obtained, 2)) ?> / <?= e(number_format($total, 2)) ?></span>
+            <span>Progress: <?= e(format_marks($obtained)) ?> / <?= e(format_marks($total)) ?></span>
             <div class="progress"><span style="width:<?= min(100, $pct) ?>%;background:<?= $passFail==='PASS'?'#22c55e':'#ef4444' ?>"></span></div>
         </div>
     </div>
@@ -184,7 +184,7 @@ if ($sessionExamId && $sessionStudentId) {
                             <span class="badge <?= !empty($a['is_correct'])?'badge-success':'badge-danger' ?>">
                                 <?= !empty($a['is_correct']) ? 'Correct' : 'Incorrect' ?>
                             </span>
-                            <span class="badge"><?= e((string)($a['marks_obtained'] ?? 0)) ?> / <?= e((string)$a['max_marks']) ?></span>
+                            <span class="badge"><?= e(format_marks($a['marks_obtained'] ?? 0)) ?> / <?= e(format_marks($a['max_marks'])) ?></span>
                         </div>
                         <strong><?= e($a['question_text']) ?></strong>
                         <span>Answer: <?= e($a['answer_text'] ?: '—') ?> · Key: <?= e($a['correct_answer'] ?: '—') ?></span>
@@ -201,9 +201,9 @@ if ($sessionExamId && $sessionStudentId) {
                     <article class="question-card" style="margin:0">
                         <div class="chip-row" style="margin-bottom:8px">
                             <span class="badge">Q<?= $i + 1 ?></span>
-                            <span class="badge badge-info">Max <?= e((string)$a['max_marks']) ?></span>
+                            <span class="badge badge-info">Max <?= e(format_marks($a['max_marks'])) ?></span>
                             <?php if (!empty($a['is_graded'])): ?>
-                                <span class="badge badge-success">Graded <?= e((string)$a['marks_obtained']) ?></span>
+                                <span class="badge badge-success">Graded <?= e(format_marks($a['marks_obtained'])) ?></span>
                             <?php else: ?>
                                 <span class="badge badge-warning">Ungraded</span>
                             <?php endif; ?>
@@ -217,7 +217,7 @@ if ($sessionExamId && $sessionStudentId) {
                             <input type="hidden" name="return_exam_id" value="<?= $sessionExamId ?>">
                             <input type="hidden" name="return_student_id" value="<?= $sessionStudentId ?>">
                             <div class="form-group" style="margin:0"><label>Marks</label>
-                                <input class="form-control" type="number" step="0.5" min="0" max="<?= e((string)$a['max_marks']) ?>" name="marks_obtained" required value="<?= e((string)($a['marks_obtained'] ?? '')) ?>">
+                                <input class="form-control" type="number" step="1" min="0" max="<?= e(format_marks($a['max_marks'])) ?>" name="marks_obtained" required value="<?= e(($a['marks_obtained'] ?? '') !== '' && $a['marks_obtained'] !== null ? format_marks($a['marks_obtained']) : '') ?>">
                             </div>
                             <div class="form-group" style="margin:0"><label>Feedback</label>
                                 <input class="form-control" name="feedback" value="<?= e($a['feedback'] ?? '') ?>" placeholder="Optional">
@@ -310,7 +310,7 @@ require dirname(__DIR__) . '/includes/header.php';
                         <div class="chip-row" style="margin-bottom:10px">
                             <span class="badge badge-brand"><?= e($p['exam_title']) ?></span>
                             <span class="badge"><?= e($p['student_name']) ?> · <?= e($p['roll']) ?></span>
-                            <span class="badge badge-info">Max <?= e((string)$p['max_marks']) ?></span>
+                            <span class="badge badge-info">Max <?= e(format_marks($p['max_marks'])) ?></span>
                             <a class="btn btn-sm btn-secondary" href="?session_id=<?= (int)$p['exam_id'] ?>&student_id=<?= (int)$p['student_pk'] ?>">Full evaluate</a>
                         </div>
                         <h3><?= e($p['question_text']) ?></h3>
@@ -318,7 +318,7 @@ require dirname(__DIR__) . '/includes/header.php';
                         <form method="post" class="form-row" style="align-items:end">
                             <?= csrf_field() ?>
                             <input type="hidden" name="answer_id" value="<?= (int)$p['id'] ?>">
-                            <div class="form-group" style="margin:0"><label>Marks</label><input class="form-control" type="number" step="0.5" min="0" max="<?= e((string)$p['max_marks']) ?>" name="marks_obtained" required></div>
+                            <div class="form-group" style="margin:0"><label>Marks</label><input class="form-control" type="number" step="1" min="0" max="<?= e(format_marks($p['max_marks'])) ?>" name="marks_obtained" required></div>
                             <div class="form-group" style="margin:0"><label>Feedback</label><input class="form-control" name="feedback" placeholder="Optional feedback"></div>
                             <button class="btn btn-primary" type="submit">Save grade</button>
                         </form>
