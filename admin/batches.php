@@ -13,24 +13,28 @@ if (is_post()) {
     $action = (string)request('action');
     if ($action === 'save') {
         $id = (int)request('id', 0);
-        $name = trim((string)request('name'));
-        $year = (int)request('year', (int)date('Y'));
+        $startYear = (int)request('start_year', (int)date('Y'));
+        $endYear = (int)request('year', $startYear);
         $departmentId = (int)request('department_id', 0) ?: null;
         $status = (string)request('status', 'active');
-        if ($name === '' || $year < 2000) {
-            flash('error', 'Name and a valid year are required.');
+        // Display format matches: "Batch 2024 – 2024"
+        $name = 'Batch ' . $startYear;
+        if ($startYear < 2000 || $endYear < 2000) {
+            flash('error', 'Start year and end year are required (2000 or later).');
+        } elseif ($endYear < $startYear) {
+            flash('error', 'End year cannot be earlier than start year.');
         } else {
             try {
                 if ($id) {
                     db()->prepare('UPDATE batches SET name=?, year=?, department_id=?, status=? WHERE id=?')
-                        ->execute([$name, $year, $departmentId, $status, $id]);
+                        ->execute([$name, $endYear, $departmentId, $status, $id]);
                     flash('success', 'Batch updated.');
                 } else {
                     db()->prepare('INSERT INTO batches (name, year, department_id, status) VALUES (?,?,?,?)')
-                        ->execute([$name, $year, $departmentId, $status]);
+                        ->execute([$name, $endYear, $departmentId, $status]);
                     flash('success', 'Batch created.');
                 }
-                log_activity((int)$user['id'], 'batch_save', $name);
+                log_activity((int)$user['id'], 'batch_save', $name . ' – ' . $endYear);
             } catch (PDOException) {
                 flash('error', 'Could not save batch.');
             }
@@ -53,10 +57,19 @@ $rows = db()->query(
 )->fetchAll();
 $editId = (int)request('edit', 0);
 $edit = null;
+$editStartYear = (int)date('Y');
 if ($editId) {
     $st = db()->prepare('SELECT * FROM batches WHERE id=?');
     $st->execute([$editId]);
     $edit = $st->fetch() ?: null;
+    if ($edit) {
+        // Prefer year parsed from "Batch 2024"; fall back to stored year
+        if (preg_match('/\b(20\d{2})\b/', (string)$edit['name'], $m)) {
+            $editStartYear = (int)$m[1];
+        } else {
+            $editStartYear = (int)$edit['year'];
+        }
+    }
 }
 
 $pageTitle = 'Batches';
@@ -75,10 +88,15 @@ require dirname(__DIR__) . '/includes/header.php';
             <tbody>
             <?php if (!$rows): ?><tr><td colspan="5"><div class="empty-state"><h3>No batches</h3></div></td></tr><?php endif; ?>
             <?php foreach ($rows as $r): ?>
+                <?php
+                    // Single-line label like screenshot: "Batch 2024 – 2024"
+                    $startLabel = preg_match('/\b(20\d{2})\b/', (string)$r['name'], $m)
+                        ? (int)$m[1]
+                        : (int)$r['year'];
+                    $batchLabel = 'Batch ' . $startLabel . ' – ' . (int)$r['year'];
+                ?>
                 <tr>
-                    <td>
-                        <strong><?= e($r['name']) ?> - <?= (int)$r['year'] ?></strong>
-                    </td>
+                    <td><strong style="white-space:nowrap"><?= e($batchLabel) ?></strong></td>
                     <td><?= e($r['department_name'] ?: '—') ?></td>
                     <td><?= (int)$r['student_count'] ?></td>
                     <td><span class="badge <?= $r['status']==='active'?'badge-success':'badge-warning' ?>"><?= e($r['status']) ?></span></td>
@@ -103,9 +121,20 @@ require dirname(__DIR__) . '/includes/header.php';
             <?php if ($edit): ?><input type="hidden" name="id" value="<?= (int)$edit['id'] ?>"><?php endif; ?>
             <div class="modal-body">
                 <div class="form-row">
-                    <div class="form-group"><label>Batch name</label><input class="form-control" name="name" required value="<?= e($edit['name'] ?? '') ?>" placeholder="e.g. Batch 2024"></div>
-                    <div class="form-group"><label>End year</label><input class="form-control" type="number" name="year" min="2000" max="2100" required value="<?= e((string)($edit['year'] ?? date('Y'))) ?>" placeholder="e.g. 2028"></div>
+                    <div class="form-group">
+                        <label>Start year</label>
+                        <input class="form-control" type="number" name="start_year" id="batchStartYear" min="2000" max="2100" required
+                               value="<?= e((string)$editStartYear) ?>" placeholder="e.g. 2024">
+                    </div>
+                    <div class="form-group">
+                        <label>End year</label>
+                        <input class="form-control" type="number" name="year" id="batchEndYear" min="2000" max="2100" required
+                               value="<?= e((string)($edit['year'] ?? date('Y'))) ?>" placeholder="e.g. 2028">
+                    </div>
                 </div>
+                <p style="margin:0 0 14px;color:var(--muted);font-size:.9rem">
+                    Preview: <strong id="batchPreview">Batch <?= e((string)$editStartYear) ?> – <?= e((string)($edit['year'] ?? date('Y'))) ?></strong>
+                </p>
                 <div class="form-row">
                     <div class="form-group"><label>Department</label>
                         <select class="form-select" name="department_id">
@@ -130,4 +159,19 @@ require dirname(__DIR__) . '/includes/header.php';
         </form>
     </div>
 </div>
+<script>
+(() => {
+    const start = document.getElementById('batchStartYear');
+    const end = document.getElementById('batchEndYear');
+    const preview = document.getElementById('batchPreview');
+    if (!start || !end || !preview) return;
+    const sync = () => {
+        const s = start.value || '————';
+        const e = end.value || '————';
+        preview.textContent = `Batch ${s} – ${e}`;
+    };
+    start.addEventListener('input', sync);
+    end.addEventListener('input', sync);
+})();
+</script>
 <?php require dirname(__DIR__) . '/includes/footer.php'; ?>
